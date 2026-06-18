@@ -72,11 +72,12 @@ class RedisStore:
     
     def lrange(self, key, start, end):
         value_list = []
-        if not self.exists(key) or end < start:
+        if not self.exists(key):
             return value_list
         linked_list = self.store[key]
         start = start if start >=0 else len(linked_list) + start
         end = end if end >=0 else len(linked_list) + end
+        if end < start: return value_list
         curr = linked_list.head
         curr_no = 0
         while curr is not None and curr_no <= end:
@@ -86,6 +87,18 @@ class RedisStore:
             curr_no += 1
         self.lru.get(key)
         return value_list
+    
+    def ltrim(self, key, start, end):
+        if not self.exists(key):
+            return False
+        linked_list = self.store[key]
+        start = start if start >=0 else len(linked_list) + start
+        end = end if end >=0 else len(linked_list) + end
+        if end < start: return False
+        linked_list.trim_left(start)
+        linked_list.trim_right(len(linked_list) - (end - start + 1))
+        self.lru.get(key)
+        return True
     
     def hset(self, key, inner_key, inner_value):
         h_map = self.store.get(key, HashMap())

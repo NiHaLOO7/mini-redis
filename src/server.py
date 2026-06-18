@@ -49,7 +49,11 @@ def execute(command):
             return f"+{val}\n" if val else "$None\n"
         case "LRANGE":
             val = store.lrange(command[1], int(command[2]), int(command[3]))
-            return f"+{', '.join(str(v) for v in val)}\n" if val else "$None\n"
+            return f"+{val}\n" if val else "$None\n"
+        case "LTRIM":
+            aof.log(command)
+            store.ltrim(command[1], int(command[2]), int(command[3]))
+            return "+OK\n"
         case "HSET":
             aof.log(command)
             store.hset(command[1], command[2], command[3])
@@ -63,12 +67,12 @@ def execute(command):
             return f"+{val}\n"
         case "HGETALL":
             h_map = store.hgetall(command[1])
-            if not h_map:
-                return "$None\n"
-            st = ''
-            for k in h_map.keys():
-                st += f"{k} => {h_map[k]}, "
-            return f"+{st.rstrip(', ')}\n"
+            # if not h_map:
+            #     return "$None\n"
+            # st = ''
+            # for k in h_map.keys():
+            #     st += f"{k} => {h_map[k]}, "
+            return f"+{val}\n" if val else "$None\n"
         case "SADD":
             aof.log(command)
             store.sadd(command[1], command[2])
@@ -93,7 +97,7 @@ def execute(command):
             return f"+{val}\n"
         case "ZRANGE":
             val = store.zrange(command[1], int(command[2]), int(command[3]))
-            return f"+{', '.join(str(v) for v in val)}\n" if val else "$None\n"
+            return f"+{val}\n" if val else "$None\n"
         case "EXPIRE":
             aof.log(command)
             store.expire(command[1], int(command[2]))

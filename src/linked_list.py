@@ -37,6 +37,26 @@ class DoublyLinkedList:
     def __len__(self):
         return self.length
     
+    def trim_left(self, count):
+        while count > 0 and self.head is not None:
+            self.head = self.head.next
+            if self.head:
+                self.head.prev = None
+            else:
+                self.tail = None
+            self.length -= 1
+            count -= 1
+
+    def trim_right(self, count):
+        while count > 0 and self.tail is not None:
+            self.tail = self.tail.prev
+            if self.tail:
+                self.tail.next = None
+            else:
+                self.head = None
+            self.length -= 1
+            count -= 1
+
     def delete(self, node):
         if node.prev:
             node.prev.next = node.next
