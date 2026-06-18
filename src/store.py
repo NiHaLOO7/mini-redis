@@ -28,6 +28,14 @@ class RedisStore:
         self.store.delete(key)
         self.lru.delete(key)
 
+    def incr(self, key):
+        # Removes the one % chance of more than O(1) during 
+        # coillision everytime we use this value
+        value = self.store.get(key, 0) + 1 
+        self.store[key] = value
+        self.lru.put(key, value)
+        return value
+
     def exists(self, key):
         return key in self.store
     

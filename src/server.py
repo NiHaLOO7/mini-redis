@@ -24,6 +24,10 @@ def execute(command):
             aof.log(command)
             store.delete(command[1])
             return "+OK\n"
+        case "INCR":
+            aof.log(command)
+            val = store.incr(command[1])
+            return f"+{val}\n"
         case "EXISTS":
             val = store.exists(command[1])
             return f"+{val}\n"
